@@ -1,0 +1,11 @@
+{config start}
+
+maintenance_mode=0
+
+# PAS OBLIGATOIRE
+whitelist="DESKTOP-PGGC7CM", "SRVTW-02"
+
+# OBLIGATOIRE
+[server]="DESKTOP-PGGC7CM", "SRVTW-02"
+
+{config end}

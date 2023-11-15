@@ -1,0 +1,5 @@
+[server]
+pso execute #PSOEXE#echo "how are you ?"#PSOEXE# 
+pso install "Google_Chrome.msi"
+pso logs
+pso clean
