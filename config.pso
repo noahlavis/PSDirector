@@ -1,11 +1,6 @@
-{config start}
-
 maintenance_mode=0
+whitelist="PC-XX", "SRV-XX"
 
-# PAS OBLIGATOIRE
-whitelist="DESKTOP-PGGC7CM", "SRVTW-02"
-
-# OBLIGATOIRE
-[server]="DESKTOP-PGGC7CM", "SRVTW-02"
-
-{config end}
+# GROUPS (NEEDED)
+{server}="SRV-XX"
+{test}="PC-XX"
