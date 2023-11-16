@@ -1,5 +1,5 @@
-{server}
-pso execute #PSOEXE#echo "how are you ?"#PSOEXE# 
-pso install "Google_Chrome.msi"
-pso logs
-pso clean
+{test}
+execute #execute#echo "how are you ?"#execute# 
+install "zabbix_agent-6.4.8-windows-amd64-openssl.msi" -date(16/11/2023) -at(7pm)
+logs
+clean
