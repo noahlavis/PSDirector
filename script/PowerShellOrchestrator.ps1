@@ -32,7 +32,7 @@ if($maintenance_mode -eq 0){
                 }
             }
         }
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\PowerShellOrchestrator" -Name "GROUP" -Value $Groupe
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\PowerShellOrchestrator" -Name "GROUP" -Value $Group
     }
 } else{
     Write-Host "Nothing happen. Maintenance."
