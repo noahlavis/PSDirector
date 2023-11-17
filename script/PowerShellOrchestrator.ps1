@@ -26,7 +26,7 @@ if($maintenance_mode -eq 0){
                 foreach($lines in $AppInfo){
                     if($lines.Split(" ")[0] -match "install"){
                         $install
-                        $install = $($lines.Split(" ")[1])
+                        $install = (($($lines.Split(" ")[1])) -Split ('"'))[1]
                         Start-Process -FilePath "$root\apps\$AppsRootFolder\$install"
                     }
                 }
