@@ -1,5 +1,17 @@
+# RELEVANT GROUP
 {test}
-execute #execute#echo "how are you ?"#execute# 
-install "zabbix_agent-6.4.8-windows-amd64-openssl.msi" -date(16/11/2023) -at(7pm)
+
+# DATE OF THE INSTALLATION (format dd/MM/yyyy HH:mm:ss)
+date (20/11/2023 14:05:00)
+
+# EXECUTE COMMAND (POWERSHELL ONLY)
+execute #execute#echo "how are you ?"#execute#
+
+# MSI FILE (suppose to be in the same folder as instruction.pso)
+install (zabbix_agent-6.4.8-windows-amd64-openssl.msi)
+
+# ENABLE LOGS (in a reg value)
 logs
+
+# CLEAN SOURCES FILES (delete)
 clean
