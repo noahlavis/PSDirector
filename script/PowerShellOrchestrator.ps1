@@ -5,7 +5,6 @@ param(
 $root = Split-Path -Path $PSScriptRoot -Parent
 $PSOconfig = Get-Content "$root\config.pso"
 $maintenance_mode = (($PSOconfig | Select-String -Pattern "maintenance_mode=")-Split "=")[-1]
-$test_mode = (($PSOconfig | Select-String -Pattern "test_mode=")-Split "=")[-1]
 $whitelist = (((($PSOconfig | Select-String -Pattern "whitelist=")-Split "=")[-1]) -Split '"') -Split ","
 
 
