@@ -14,17 +14,19 @@ if($maintenance_mode -eq 0){
     if($whitelist -match $hostname -or $whitelist.Length -eq 1){
 
         if ($scope -eq "user") {
-            $RegRootPath=Get-ChildItem -Path Registry::HKEY_CURRENT_USER\SOFTWARE\PowerShellOrchestrator\
+            $RegRootPath = "Registry::HKEY_CURRENT_USER\SOFTWARE\PowerShellOrchestrator\"
             if(Test-Path $RegRootPath){
             } else{
                 New-Item -Path $RegRootPath
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\PowerShellOrchestrator" -Name "first_execution" -Value $(date -Format "dd/MM/yyyy HH:mm:ss")
             }
         }
         elseif ($scope -eq "computer") {
-            $RegRootPath=Get-ChildItem -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\PowerShellOrchestrator\
+            $RegRootPath = "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\PowerShellOrchestrator\"
             if(Test-Path $RegRootPath){
             } else{
                 New-Item -Path $RegRootPath
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\PowerShellOrchestrator" -Name "first_execution" -Value $(date -Format "dd/MM/yyyy HH:mm:ss")
             }
         }
         else {
@@ -40,23 +42,43 @@ if($maintenance_mode -eq 0){
                 $AppInfo = Get-Content "$root\apps\$($AppFolder.Name)\instruction.pso"
             }else{
                 Write-Error "intruction.pso not exist for $($AppFolder)"
-                exit
+                continue 
             }
             
             $AppGroup = [regex]::Matches($AppInfo, '\{(.*?)\}') | ForEach-Object {$_.Groups[1].Value}
             $PSOgroup = (((([regex]::Matches($PSOconfig, "{$AppGroup}")).Value) -Split "{") -Split "}")[1]
-            
             if($AppGroup -eq $PSOgroup){
+
+                
+                if((($AppInfo | Select-String -Pattern "for ")[0]) -replace '.*\((.*?)\).*', '$1' -notlike $scope){
+                    continue
+                }
+                
                 foreach($lines in $AppInfo){
+
+                    if($lines.Split(" ")[0] -match "logs"){
+                        $logs = (($AppInfo | Select-String -Pattern "logs ")[0]) -replace '.*\((.*?)\).*', '$1'
+                        $logs
+                    }
+                    if($lines.Split(" ")[0] -match "date"){
+                        $date = (($AppInfo | Select-String -Pattern "date ")[0]) -replace '.*\((.*?)\).*', '$1'
+                        $date
+                    }
+                    if($lines.Split(" ")[0] -match "execute"){
+                        $execute = (($AppInfo | Select-String -Pattern "execute ")[0]) -replace '.*\((.*?)\).*', '$1'
+                        $execute
+                    }
                     if($lines.Split(" ")[0] -match "install"){
+                        $install = (($AppInfo | Select-String -Pattern "install ")[0]) -replace '.*\((.*?)\).*', '$1'
                         $install
-                        $install = (($($lines.Split(" ")[1])) -Split ('"'))[1]
-                        Start-Process -FilePath "$root\apps\$AppFolder\$install"
+                    }
+                    if($lines.Split(" ")[0] -match "clean"){
+                        $clean = (($AppInfo | Select-String -Pattern "clean ")[0]) -replace '.*\((.*?)\).*', '$1'
+                        $clean
                     }
                 }
             }
         }
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\PowerShellOrchestrator" -Name "GROUP" -Value $Group
     }
 } else{
     Write-Host "Nothing happen. Maintenance."
