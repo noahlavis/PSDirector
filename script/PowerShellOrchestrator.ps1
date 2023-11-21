@@ -33,7 +33,6 @@ if($maintenance_mode -eq 0){
             Write-Error "Use 'user' or 'computer'."
             exit
         }
-
        
         $AppsRootFolder = Get-ChildItem "$root\apps\"
         foreach($AppFolder in $AppsRootFolder){
@@ -54,28 +53,28 @@ if($maintenance_mode -eq 0){
                     continue
                 }
                 
+                $continue = 1
                 foreach($lines in $AppInfo){
 
-                    if($lines.Split(" ")[0] -match "logs"){
-                        $logs = (($AppInfo | Select-String -Pattern "logs ")[0]) -replace '.*\((.*?)\).*', '$1'
-                        $logs
-                    }
                     if($lines.Split(" ")[0] -match "date"){
                         $date = (($AppInfo | Select-String -Pattern "date ")[0]) -replace '.*\((.*?)\).*', '$1'
-                        $date
+                        if($date -gt $(date -Format "dd/MM/yyyy HH:mm:ss")){
+                            $continue = 0
+                        }
                     }
-                    if($lines.Split(" ")[0] -match "execute"){
+                    if($lines.Split(" ")[0] -match "execute" -and $continue -eq 1){
                         $execute = (($AppInfo | Select-String -Pattern "execute ")[0]) -replace '.*\((.*?)\).*', '$1'
                         $execute
                     }
-                    if($lines.Split(" ")[0] -match "install"){
+                    if($lines.Split(" ")[0] -match "install" -and $continue -eq 1){
                         $install = (($AppInfo | Select-String -Pattern "install ")[0]) -replace '.*\((.*?)\).*', '$1'
                         $install
                     }
-                    if($lines.Split(" ")[0] -match "clean"){
+                    if($lines.Split(" ")[0] -match "clean" -and $continue -eq 1){
                         $clean = (($AppInfo | Select-String -Pattern "clean ")[0]) -replace '.*\((.*?)\).*', '$1'
                         $clean
                     }
+                    
                 }
             }
         }
