@@ -1,6 +1,12 @@
+# MAINTENANCE MODE : 0 disable / 1 enable (NOT NEEDED)
 maintenance_mode=0
+
+# WHITELIST : 0 host = whitelist disable / 1+ whitelist enable (NOT NEEDED)
 whitelist="PC-XX", "SRV-XX"
 
-# GROUPS (NEEDED)
+# GROUPS : deploy as many groups as you want (NEEDED)
 {server}="SRV-XX"
 {test}="PC-XX"
+
+# * parameter exist to select all the computers 
+{all}=*
