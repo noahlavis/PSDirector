@@ -7,8 +7,8 @@ for (computer)
 # DATE OF THE INSTALLATION (format dd/MM/yyyy HH:mm:ss)
 date (20/11/2023 14:05:00)
 
-# EXECUTE COMMAND (POWERSHELL ONLY)
-execute #execute#echo "how are you ?"#execute#
+# EXECUTE CUSTOM SCRIPT (POWERSHELL ONLY)
+execute (file.ps1)
 
 # MSI FILE (suppose to be in the same folder as instruction.pso)
 install (zabbix_agent-6.4.8-windows-amd64-openssl.msi)
