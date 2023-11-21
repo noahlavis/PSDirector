@@ -7,8 +7,11 @@ for (computer)
 # ONLINE OR OFFLINE
 mode (offline)
 
+# DAY OF THE SCRIPT EXECUTION (format dd/MM/yyyy HH:mm:ss)
+date_execute (21/11/2023 15:30:00)
+
 # DAY OF THE INSTALLATION (format dd/MM/yyyy HH:mm:ss)
-date (20/11/2023 14:05:00)
+date_install (21/11/2023 14:30:00)
 
 # LAUNCH CUSTOM SCRIPT (POWERSHELL ONLY)
 execute (file.ps1)
