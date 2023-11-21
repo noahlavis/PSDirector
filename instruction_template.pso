@@ -13,8 +13,5 @@ execute (file.ps1)
 # MSI FILE (suppose to be in the same folder as instruction.pso)
 install (zabbix_agent-6.4.8-windows-amd64-openssl.msi)
 
-# ENABLE LOGGING (in a reg value)
-logs
-
 # DELETE SOURCES FILES
 clean
