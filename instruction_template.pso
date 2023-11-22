@@ -1,23 +1,35 @@
+## NEEDED
 # RELEVANT GROUP
 {test}
 
+## NEEDED
 # RELEVANT TYPE : computer or user
 for (computer)
 
+## NEEDED
 # ONLINE OR OFFLINE
 mode (offline)
 
+## NOT NEEDED
 # DAY OF THE SCRIPT EXECUTION (format dd/MM/yyyy HH:mm:ss)
 date_execute (21/11/2023 15:30:00)
 
+## NOT NEEDED
+# DAY OF THE DOWNLOAD (format dd/MM/yyyy HH:mm:ss) 
+date_download (21/11/2023 15:30:00)
+
+## NOT NEEDED
 # DAY OF THE INSTALLATION (format dd/MM/yyyy HH:mm:ss)
 date_install (21/11/2023 14:30:00)
 
+## NOT NEEDED
 # LAUNCH CUSTOM SCRIPT (POWERSHELL ONLY)
 execute (file.ps1)
 
+## NOT NEEDED
 # MSI FILE (suppose to be in the same folder as instruction.pso)
 download (zabbix_agent-6.4.8-windows-amd64-openssl.msi)
 
+## NOT NEEDED
 # DELETE SOURCES FILES
 clean
