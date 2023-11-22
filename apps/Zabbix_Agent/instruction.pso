@@ -4,5 +4,5 @@ mode (offline)
 date_execute (21/11/2023 15:30:00)
 date_install (21/11/2023 14:30:00)
 execute (file.ps1)
-install (zabbix_agent-6.4.8-windows-amd64-openssl.msi)
+download (zabbix_agent-6.4.8-windows-amd64-openssl.msi)
 clean on
