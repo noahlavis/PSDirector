@@ -71,13 +71,12 @@ if($maintenance_mode -eq 0){
                 }
                 
                 $continue = 1
-                $conf_order = ""
+                $conf_nextrun = ""
                 foreach($lines in $AppInfo){
-                    
+                    $continue = 1
                     if($lines -match "^date_execute_online \((.*?)\)"){
                         $date_execute_online = (($AppInfo | Select-String -Pattern "date_execute_online ")[0]) -replace '.*\((.*?)\).*', '$1'
                         Set-ItemProperty -Path "$RegRootPath\$($AppFolder.Name)" -Name "date_execute_online" -Value $date_execute_online
-                        $conf_order += "date_execute_online, "
 
                         $date_execute_online
                         if($date_execute_online -gt $(date -Format "dd/MM/yyyy HH:mm:ss")){
@@ -87,7 +86,6 @@ if($maintenance_mode -eq 0){
                     if($lines -match "^date_execute_offline \((.*?)\)"){
                         $date_execute_offline = (($AppInfo | Select-String -Pattern "date_execute_offline ")[0]) -replace '.*\((.*?)\).*', '$1'
                         Set-ItemProperty -Path "$RegRootPath\$($AppFolder.Name)" -Name "date_execute_offline" -Value $date_execute_offline
-                        $conf_order += "date_execute_offline, "
 
                         $date_execute_offline
                         if($date_execute_offline -gt $(date -Format "dd/MM/yyyy HH:mm:ss")){
@@ -97,7 +95,6 @@ if($maintenance_mode -eq 0){
                     if($lines -match "^date_download \((.*?)\)"){
                         $date_download = (($AppInfo | Select-String -Pattern "date_download ")[0]) -replace '.*\((.*?)\).*', '$1'
                         Set-ItemProperty -Path "$RegRootPath\$($AppFolder.Name)" -Name "date_download" -Value $date_download
-                        $conf_order += "date_download, "
 
                         $date_download
                         if($date_download -gt $(date -Format "dd/MM/yyyy HH:mm:ss")){
@@ -107,7 +104,6 @@ if($maintenance_mode -eq 0){
                     if($lines -match "^date_install_msi \((.*?)\)"){
                         $date_install_msi = (($AppInfo | Select-String -Pattern "date_install_msi ")[0]) -replace '.*\((.*?)\).*', '$1'
                         Set-ItemProperty -Path "$RegRootPath\$($AppFolder.Name)" -Name "date_install_msi" -Value $date_install_msi
-                        $conf_order += "date_install_msi, "
 
                         $date_install_msi
                         if($date_install -gt $(date -Format "dd/MM/yyyy HH:mm:ss")){
@@ -117,7 +113,7 @@ if($maintenance_mode -eq 0){
                     if($lines -match "^execute_script \((.*?)\)" -and $continue -eq 1){
                         $execute_script = (($AppInfo | Select-String -Pattern "execute_script \((.*?)\)")[0]) -replace '.*\((.*?)\).*', '$1'
                         Set-ItemProperty -Path "$RegRootPath\$($AppFolder.Name)" -Name "execute_script" -Value $execute_script
-                        $conf_order += "execute_script, "
+                        $conf_nextrun += "execute_script+"
 
                         $execute_script
                     }
@@ -125,13 +121,138 @@ if($maintenance_mode -eq 0){
                         $clean = (($AppInfo | Select-String -Pattern "clean ")[0]) -replace '.*\((.*?)\).*', '$1'
                         Set-ItemProperty -Path "$RegRootPath\$($AppFolder.Name)" -Name "clean" -Value $clean
                         Set-ItemProperty -Path "$RegRootPath\$($AppFolder.Name)" -Name "is_clean" -Value 0 -Type QWord
-                        $conf_order += "clean, "
+                        $conf_nextrun += "clean+"
 
                         $clean
                     }     
                 }
-                Set-ItemProperty -Path "$RegRootPath\$($AppFolder.Name)" -Name "(conf)_order" -Value $conf_order
+
+                Set-ItemProperty -Path "$RegRootPath\$($AppFolder.Name)" -Name "(conf)_nextrun_histoy" -Value $conf_nextrun
+                Set-ItemProperty -Path "$RegRootPath\$($AppFolder.Name)" -Name "(conf)_nextrun" -Value $conf_nextrun
                 Set-ItemProperty -Path "$RegRootPath\$($AppFolder.Name)" -Name "(conf)_hostname" -Value $(hostname)
+
+                while($conf_nextrun.count -ne 0 -or $conf_nextrun.count -ne $null -or $conf_nextrun -ne ""){
+
+
+                $NextRunList = $conf_nextrun.Split("+")
+                $NextRunCommande = $NextRunList[0]
+
+
+                $NextRunList = $conf_nextrun
+                $NextRunList = $conf_nextrun.Split("+")
+
+
+                if ($NextRunList.Contains($NextRunCommande)) {
+
+
+                    $NewNextRunList = @()
+                    foreach ($Commande in $NextRunList) {
+                        if ($Commande -contains $NextRunCommande) {
+                    
+                        } else {$NewNextRunList += $Commande}
+                    }
+                    $NextRunList = $NewNextRunList
+
+
+                    $conf_nextrun = $NextRunList -join "+"
+                }
+                
+                if($NextRunCommande -contains "CmdUninstall"){
+
+
+                    if($config.UninstalledFrom){
+                        $UninstalledFrom=[Datetime]::ParseExact($config.UninstalledFrom, 'dd/MM/yyyy', $null)
+                        if($today -lt $UninstalledFrom){
+                            break
+                        }
+                     }
+
+
+                    $verifIsUninstalled=$config.IsUninstalled
+                    if($verifIsUninstalled -eq "1"){
+                
+                    } else {
+                        $commandexe=Get-ItemPropertyValue -Path $path -Name $NextRunCommande
+                        Invoke-Expression $commandexe
+                    }
+                }
+        
+                if($NextRunCommande -contains "CmdDownload"){
+                    $verifIsDownloaded=$config.IsDownloaded
+                    if($verifIsDownloaded -eq "1"){
+                
+                    } else {
+                        $commandexe=Get-ItemPropertyValue -Path $path -Name $NextRunCommande
+                        Invoke-Expression $commandexe
+                    }
+                }
+
+
+                elseif($NextRunCommande -eq "CmdInstall"){
+                    if($config.InstalledFrom){
+                        $InstalledFrom=[Datetime]::ParseExact($config.InstalledFrom, 'dd/MM/yyyy', $null)
+                        if($today -lt $InstalledFrom){
+                            break
+                        }
+                     }
+            
+                    $verifIsInstalled=$config.IsInstalled
+                    $verifIsNetworkInstall=$config.NetworkInstall+$config.IsDownloaded
+                    if($verifIsInstalled -eq "1"){
+                
+                    } else {
+                        $commandexe=Get-ItemPropertyValue -Path $path -Name $NextRunCommande
+                        Invoke-Expression $commandexe
+                    }
+                }
+
+
+                elseif($NextRunCommande -eq "CmdClean"){
+                    $verifIsDownloaded=$config.IsDownloaded
+			        $verifIsInstalled=$config.IsInstalled
+                    if($verifIsDownloaded -eq "0" -and $verifIsInstalled -eq "0"){
+                
+                    } else {
+                        $commandexe=Get-ItemPropertyValue -Path $path -Name $NextRunCommande
+                        Invoke-Expression $commandexe
+                    }
+                }
+
+
+                $listecommandelog+=$NextRunCommande
+
+
+                if($error[0].length -gt 0){
+                    New-ItemProperty -Path $path -Name Output -Value "($listecommandelog, $today, $error[0]" -PropertyType String -Force
+                    break
+                }
+   
+                if($NextRunCommande -eq "CmdUninstall"){
+                    New-ItemProperty -Path $path -Name IsUninstalled -Value 1 -PropertyType DWORD -Force
+                }
+                if($NextRunCommande -eq "CmdDownload"){
+                    New-ItemProperty -Path $path -Name IsDownloaded -Value 1 -PropertyType DWORD -Force
+                }
+                if($NextRunCommande -eq "CmdInstall" -and $today -gt $InstalledFrom){
+                    New-ItemProperty -Path $path -Name IsInstalled -Value 1 -PropertyType DWORD -Force
+                }
+
+
+		        if($error[0].length -eq 0){
+			        New-ItemProperty -Path $path -Name Output -Value "($listecommandelog, $today) Il n'y a pas eu d'erreur." -PropertyType String -Force 
+		        }
+
+
+
+
+                New-ItemProperty -Path $path -Name NextRun -Value $NextRun -PropertyType String -Force 
+
+
+        
+                if($NextRunCommande -eq "" -or $NextRunCommande -eq $null){
+                    break
+                }
+                }
             }
         }
     }
@@ -139,3 +260,16 @@ if($maintenance_mode -eq 0){
     Write-Host "Nothing happen. Maintenance."
 }
 
+
+
+
+
+
+
+
+
+    
+    $NextRun=$config.NextRun
+
+
+ 
